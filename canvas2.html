@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta chrast="UTF-8>">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Canvas</title>
+</head>
+<body>
+    <h3>Canvas</h3>
+    <input type="file" onchange="loadFile(this);" />
+    <button onclick="grayscale();">Grayscale</button>
+    <button onclick="invert();">Invert</button>
+    <button onclick="downloadFile();">Download</button>
+    <a id="download-link"></a>
+    <hr/>
+    <canvas id="cvs" width="800" height="600" style="border:1px solid black"></canvas>
+    <script>
+        function downloadFile(){
+            //將 canvas 的資料輸出：轉換成blob物件
+            cvs.toBlob(function(bolb){
+                //將 blob 轉換成網址
+                let src=URL.createObjectURL(bolb);
+                //操作 HTML download link
+                let link=document.querySelector("#download-link");
+            link.href=src;
+            link.download="檔案名稱.jpg";
+            link.click();//模擬使用者點擊
+            })
+        }
+        function loadFile(input){
+            let file=input.files[0];//取得使用者選取的檔案物件
+            let src=URL.createObjectURL(file);//將檔案物件或blob物件轉換成內部網址
+            loadImage(src);
+        }
+        function invert(){//把顏色反轉
+            let pixels=ctx.getImageData(0,0,cvs.width, cvs.height);
+            let data=pixels.data;
+            //以像素為單位處理資料
+            for(let i=0;i<data.length;i+=4){
+                data[i]=255-data[i];//r //data[i]=0 -> 把紅色拿掉
+                data[i+1]=255-data[i+1];//g
+                data[i+2]=255-data[i+2];//b
+                /*
+                data[i+3]//a //透明度
+                */
+            }
+            ctx.putImageData(pixels, 0,0);
+        }
+
+        function grayscale(){
+            let pixels=ctx.getImageData(0,0,cvs.width, cvs.height);
+            let data=pixels.data;
+            //以像素微單位處理資料
+            let avg;
+            for(let i=0;i<data.length;i+=4){
+                avg=(data[i]+data[i+1]+data[i+2])/3; //灰階
+                data[i]=avg;//r //data[i]=0 -> 把紅色拿掉
+                data[i+1]=avg;//g
+                data[i+2]=avg;//b
+                /*
+                data[i+3]//a //透明度
+                */
+            }
+            ctx.putImageData(pixels, 0,0);
+        }
+        let cvs=document.querySelector("#cvs");//取得 canvas 標籤
+        let ctx=cvs.getContext("2d");//取得 canvas 對應的 context 物件
+        //畫一張圖片到畫布上
+        function loadImage(src){
+        let img=new Image();//相當於<img src="圖檔位置" />標籤
+        img.src=src;//圖片是外部資源
+        img.addEventListener("load", function(){
+            //調整canvas 的尺寸和圖片一樣
+            cvs.width=img.width;
+            cvs.height=img.height;
+            //確認圖片載入完成之後，才畫上去
+            ctx.drawImage(img, 0,0, cvs.width, cvs.height);//圖片 X座標 Y座標 寬度 高度
+        });
+        }
+        loadImage("cat.png");
+    </script>
+</body>
+</html>

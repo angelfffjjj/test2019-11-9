@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta chrast="UTF-8>">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Canvas</title>
+</head>
+<body>
+    <h3>Canvas</h3>
+    <canvas id="cvs" width="800" height="600" style="border:1px solid black"></canvas>
+    <script>
+        let cvs=document.querySelector("#cvs");//取得 canvas 標籤
+        let ctx=cvs.getContext("2d");//取得 canvas 對應的 context 物件
+        //填滿
+        ctx.fillStyle="pink";
+        ctx.fillRect(50, 50, 100, 100);//利用 context 物件來作畫：畫一個方形
+        ctx.fillStyle="blue";
+        ctx.font="30px ariel"//和 css的font屬性一樣//ctx.font="大小 屬性"
+        ctx.fillText("Hello", 500, 100);
+        //描邊
+        ctx.strokeStyle="red";
+        ctx.strokeRect(50, 300, 50,50);
+        //繪製路徑：比較複雜的形狀(曲線)
+        //定義路徑>填滿或描邊
+        ctx.beginPath();
+        ctx.arc(300,300,20,0,2*Math.PI);//圓心 半徑 起始的角度 2*pi->360度
+        ctx.fill();//填滿 //ctx.stroke只有線
+        //畫一張圖片到畫布上
+        let img=new Image();//相當於<img src="圖檔位置" />標籤
+        img.src="cat.png";//圖片是外部資源
+        img.addEventListener("load", function(){
+            //調整canvas 的尺寸和圖片一樣
+            cvs.width=img.width;
+            cvs.height=img.height;
+            //確認圖片載入完成之後，才畫上去
+            ctx.drawImage(img, 0,0, cvs.width, cvs.height);//圖片 X座標 Y座標 寬度 高度
+        });
+    </script>
+</body>
+</html>
